@@ -7,7 +7,8 @@ jQuery(document).ready(function($){
 		],
 		cellSize=100,
 		turn='O',
-		winner=false;
+		winner=false,
+		win_type="";
 
 	//the cell object which will handle our clicks and posseses all the balls
 	var Cell=function(left,top,index){
@@ -40,7 +41,7 @@ jQuery(document).ready(function($){
 				top:top+20,
 				fontSize:80,
 				fill:(turn=="O")?"#000":"#f00",
-				fontFamily:'Verdana',
+				fontFamily:'Cursive',
 				hasControls:false,
 				hasBorders:false,
 				hasRotatingPoint:false,
@@ -57,8 +58,10 @@ jQuery(document).ready(function($){
 				turn='O';
 			}
 			this.hasAdded=true;
-			if(check_winner())
-				alert(winner+" has won!");
+			if(check_winner()){
+				// winning_stroke(0,2);
+				// alert(winner+" has won!");
+			}
 		});
 	}
 
@@ -83,6 +86,8 @@ jQuery(document).ready(function($){
 			var row=score[rowKey];
 			if(areEqual(row[0],row[1],row[2]) && row[0]!=-1){
 				winner=row[0];
+				win_type="row";
+				winning_stroke(rowKey*3,rowKey*3+2);
 				return true;
 			}
 		}
@@ -91,6 +96,8 @@ jQuery(document).ready(function($){
 		for(var i=0;i<3;i++){
 			if(areEqual(score[0][i],score[1][i],score[2][i]) && score[0][i]!=-1){
 				winner=score[0][i];
+				win_type="column";
+				winning_stroke(i,6+i);
 				return true;
 			}
 		}
@@ -98,15 +105,47 @@ jQuery(document).ready(function($){
 		//3
 		if(areEqual(score[0][0],score[1][1],score[2][2]) && score[0][0]!=-1){
 			winner=score[0][0];
+			win_type="diagonal";
+			winning_stroke(0,8);
 			return true;
 		}
 
 		//4
 		if(areEqual(score[0][2],score[1][1],score[2][0]) && score[2][0]!=-1){
 			winner=score[2][0];
+			win_type="sec_diagonal";
+			winning_stroke(2,6);
 			return true;
 		}
 		return false;
+	}
+
+	//function to draw a stroke for the wining combinations
+	function winning_stroke(start,end){
+
+		var startI=start%3,
+			startJ=parseInt(start/3),
+			endI=end%3,
+			endJ=parseInt(end/3);
+console.log(start,end,startI,startJ,endI,endJ);
+			x1=100*startI+50,
+				y1=100*startJ+50,
+				x2=100*endI+50,
+				y2=100*endJ+50
+
+		// switch(win_type){
+		// 	case "row":
+		// 		x1=100*startI+50,
+		// 		y1=100*startJ+50,
+		// 		x2=100*endI+50,
+		// 		y2=100*startJ+50
+		// 	break;
+		// }
+
+		canvas.add(new fabric.Line([x1,y1,x2,y2],{
+			stroke:(winner=="O")?"#f00":"#000",
+			strokeWidth:2
+		}));
 	}
 
 	//reset that bitch!
