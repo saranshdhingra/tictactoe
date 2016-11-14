@@ -6,9 +6,9 @@ $options = array(
 'encrypted' => true
 );
 $pusher = new Pusher(
-'YOUR_APP_KEY',
-'YOUR_APP_SECRET',
-'YOUR_APP_ID',
+'c26af291eb975bd35118',
+'45420ff47a8f07a673cc',
+'269113',
 $options
 );
 

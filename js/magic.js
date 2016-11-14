@@ -15,7 +15,7 @@ jQuery(document).ready(function($){
 		cellSize=100,
 		turn="O",	//The starting turn will always be O
 		winner=false;
-		pusher = new Pusher('YOUR_APP_KEY', {
+		pusher = new Pusher('c26af291eb975bd35118', {
 			cluster: 'ap1',
 			encrypted: true
 		}),
