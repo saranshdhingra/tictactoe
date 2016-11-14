@@ -1,4 +1,11 @@
+var cells=[
+			[-1,-1,-1],
+			[-1,-1,-1],
+			[-1,-1,-1]
+		];
 jQuery(document).ready(function($){
+	Pusher.logToConsole = true;
+
 	var canvas = new fabric.Canvas('game'),
 		score=[
 			[-1,-1,-1],
@@ -6,9 +13,21 @@ jQuery(document).ready(function($){
 			[-1,-1,-1]
 		],
 		cellSize=100,
-		turn='O',
-		winner=false,
-		win_type="";
+		turn="O",	//The starting turn will always be O
+		winner=false;
+		pusher = new Pusher('c26af291eb975bd35118', {
+			cluster: 'ap1',
+			encrypted: true
+		}),
+		channel = pusher.subscribe('tic_tac_toe');
+
+		channel.bind('score_changed', function(data) {
+			score=data.score;
+			turn=data.turn;
+			sync_score();
+			// if(data.turn!=my_turn)
+			// 	return false;
+		});
 
 	//the cell object which will handle our clicks and posseses all the balls
 	var Cell=function(left,top,index){
@@ -27,50 +46,63 @@ jQuery(document).ready(function($){
 			strokeWidth:1
 		});
 		rect.cellIndex=index;
+		rect.posLeft=left;
+		rect.posTop=top;
 		canvas.add(rect);
 
 		//click handler
 		rect.on("selected",function(){
-			if(winner || this.hasAdded)
+			if(winner || this.hasAdded || turn!=my_turn)
 				return false;
+			
 			var index=this.cellIndex,
-				j=parseInt(index/3),	//i and j are interchanged
-				i=index%3,
-				props={
-				left:left+20,
-				top:top+20,
-				fontSize:80,
-				fill:(turn=="O")?"#000":"#f00",
-				fontFamily:'Cursive',
-				hasControls:false,
-				hasBorders:false,
-				hasRotatingPoint:false,
-				lockMovementX:true,
-				lockMovementY:true,
-			};
-			score[i][j]=turn;
-			if(turn=="O"){
-				canvas.add(new fabric.Text('O', props));
-				turn='X';
-			}
-			else if(turn=="X"){
-				canvas.add(new fabric.Text('X', props));
-				turn='O';
-			}
-			this.hasAdded=true;
-			if(check_winner()){
-				// winning_stroke(0,2);
-				// alert(winner+" has won!");
-			}
+				i=parseInt(index/3),
+				j=index%3;
+			score[i][j]=my_turn;
+			turn=my_turn=="O"?"X":"O";
+			sync_score();
+
+			$.post("push.php",{score:score,turn:turn});
 		});
+
+		this.rect=rect;
+	}
+
+	//draw either O or X
+	function draw_obj(obj,entity){
+		var index=obj.cellIndex,
+			i=parseInt(index/3),
+			j=index%3,
+			props={
+			left:obj.posLeft+10,
+			top:obj.posTop+10,
+			fontSize:80,
+			fill:(entity=="O")?"#000":"#f00",
+			fontFamily:'Cursive',
+			hasControls:false,
+			hasBorders:false,
+			hasRotatingPoint:false,
+			lockMovementX:true,
+			lockMovementY:true,
+		};
+		
+		if(entity=="O"){
+			canvas.add(new fabric.Text('O', props));
+		}
+		else if(entity=="X"){
+			canvas.add(new fabric.Text('X', props));
+		}
+		obj.hasAdded=true;
 	}
 
 	function init(){
 		//create a grid
 		// the grid is a network of rectangles which when clicked will do the computations
+		//i is the row, j is the column
 		for(var i=0;i<canvas.width/cellSize;i++){
 			for(var j=0;j<canvas.height/cellSize;j++){
-				var cell=new Cell(i*cellSize,j*cellSize,(3*i)+j);
+				var cell=new Cell(j*cellSize,i*cellSize,(3*i)+j);
+				cells[i][j]=cell;
 			}
 		}
 	}
@@ -86,7 +118,6 @@ jQuery(document).ready(function($){
 			var row=score[rowKey];
 			if(areEqual(row[0],row[1],row[2]) && row[0]!=-1){
 				winner=row[0];
-				win_type="row";
 				winning_stroke(rowKey*3,rowKey*3+2);
 				return true;
 			}
@@ -96,7 +127,6 @@ jQuery(document).ready(function($){
 		for(var i=0;i<3;i++){
 			if(areEqual(score[0][i],score[1][i],score[2][i]) && score[0][i]!=-1){
 				winner=score[0][i];
-				win_type="column";
 				winning_stroke(i,6+i);
 				return true;
 			}
@@ -105,7 +135,6 @@ jQuery(document).ready(function($){
 		//3
 		if(areEqual(score[0][0],score[1][1],score[2][2]) && score[0][0]!=-1){
 			winner=score[0][0];
-			win_type="diagonal";
 			winning_stroke(0,8);
 			return true;
 		}
@@ -113,7 +142,6 @@ jQuery(document).ready(function($){
 		//4
 		if(areEqual(score[0][2],score[1][1],score[2][0]) && score[2][0]!=-1){
 			winner=score[2][0];
-			win_type="sec_diagonal";
 			winning_stroke(2,6);
 			return true;
 		}
@@ -127,20 +155,11 @@ jQuery(document).ready(function($){
 			startJ=parseInt(start/3),
 			endI=end%3,
 			endJ=parseInt(end/3);
-console.log(start,end,startI,startJ,endI,endJ);
 			x1=100*startI+50,
 				y1=100*startJ+50,
 				x2=100*endI+50,
 				y2=100*endJ+50
 
-		// switch(win_type){
-		// 	case "row":
-		// 		x1=100*startI+50,
-		// 		y1=100*startJ+50,
-		// 		x2=100*endI+50,
-		// 		y2=100*startJ+50
-		// 	break;
-		// }
 
 		canvas.add(new fabric.Line([x1,y1,x2,y2],{
 			stroke:(winner=="O")?"#f00":"#000",
@@ -157,6 +176,20 @@ console.log(start,end,startI,startJ,endI,endJ);
 		winner=false;
 		canvas.clear();
 		init();
+	}
+
+	//sync the board based on the score
+	function sync_score(){
+		for(var i=0;i<score.length;i++){
+			for(var j=0;j<score[i].length;j++){
+				if(score[i][j]!=-1){
+					var cell=cells[i][j];
+					draw_obj(cell.rect,score[i][j]);
+				}
+			}
+		}
+		check_winner();
+		$("#turn").html(turn);
 	}
 
 	//check multiple value equality irrespective of their number
