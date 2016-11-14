@@ -19,7 +19,8 @@ if(!isset($_GET['turn']))
 <script src="js/fabric.js"></script>
 <script src="https://js.pusher.com/3.2/pusher.min.js"></script>
 <script type="text/javascript">
-	var my_turn="<?=$_GET['turn'];?>";
+	var my_turn="<?=$_GET['turn'];?>",
+		app_key='<?=getenv('APP_KEY');?>';
 </script>
 <script src="js/magic.js"></script>
 </body>

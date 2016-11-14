@@ -1,14 +1,17 @@
 <?php
 require('vendor/autoload.php');
 
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 $options = array(
 'cluster' => 'ap1',
 'encrypted' => true
 );
 $pusher = new Pusher(
-'c26af291eb975bd35118',
-'45420ff47a8f07a673cc',
-'269113',
+	getenv('APP_KEY'),
+	getenv('APP_SECRET'),
+	getenv('APP_ID')
 $options
 );
 
