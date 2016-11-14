@@ -11,8 +11,8 @@ $options = array(
 $pusher = new Pusher(
 	getenv('APP_KEY'),
 	getenv('APP_SECRET'),
-	getenv('APP_ID')
-$options
+	getenv('APP_ID'),
+	$options
 );
 
 //use proper validations here

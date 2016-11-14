@@ -1,4 +1,9 @@
 <?php
+require('vendor/autoload.php');
+
+$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv->load();
+
 if(!isset($_GET['turn']))
 	die('Invalid!');
 ?>
