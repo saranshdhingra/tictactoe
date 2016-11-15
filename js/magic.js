@@ -1,8 +1,10 @@
 var cells=[
-			[-1,-1,-1],
-			[-1,-1,-1],
-			[-1,-1,-1]
-		];
+		[-1,-1,-1],
+		[-1,-1,-1],
+		[-1,-1,-1]
+	],
+	my_turn,
+	hash;
 jQuery(document).ready(function($){
 	Pusher.logToConsole = true;
 
@@ -20,14 +22,6 @@ jQuery(document).ready(function($){
 			encrypted: true
 		}),
 		channel = pusher.subscribe('tic_tac_toe');
-
-		channel.bind('score_changed', function(data) {
-			score=data.score;
-			turn=data.turn;
-			sync_score();
-			// if(data.turn!=my_turn)
-			// 	return false;
-		});
 
 	//the cell object which will handle our clicks and posseses all the balls
 	var Cell=function(left,top,index){
@@ -62,7 +56,8 @@ jQuery(document).ready(function($){
 			turn=my_turn=="O"?"X":"O";
 			sync_score();
 
-			$.post("push.php",{score:score,turn:turn});
+			$.post("push.php",{event:'score_changed',score:score,turn:turn,hash:hash});
+			$("#game_state").html("Opponent's move("+turn+")");
 		});
 
 		this.rect=rect;
@@ -169,7 +164,6 @@ jQuery(document).ready(function($){
 
 	//reset that bitch!
 	function reset_board(){
-		turn="O";
 		score.forEach(function(row){
 			row[0]=row[1]=row[2]=-1;
 		});
@@ -188,8 +182,9 @@ jQuery(document).ready(function($){
 				}
 			}
 		}
-		check_winner();
-		$("#turn").html(turn);
+		if(check_winner()){
+			$("#game_state").html("Game won by "+winner+"");
+		}
 	}
 
 	//check multiple value equality irrespective of their number
@@ -202,10 +197,63 @@ jQuery(document).ready(function($){
 		return true;
 	}
 
+	function str_random(len){
+	    var text = "";
+	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	    for( var i=0; i < len; i++ )
+	        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+	    return text;
+	}
+
 	init();
 
-	$("#reset").on("click",function(e){
+	$("#restart").on("click",function(e){
 		e.preventDefault();
-		reset_board();
+		score=[[-1,-1,-1],
+			[-1,-1,-1],
+			[-1,-1,-1]];
+		turn="O";
+		$.post("push.php",{event:'score_changed',score:score,turn:turn,hash:hash});
+		// sync_score();
+	});
+
+	$("#start_game").on("click",function(){
+		hash=str_random(10);
+		$("#hash").html(hash);
+		$("#welcome_frame").hide();
+		$("#game_frame").show();
+		my_turn="O";
+		channel.bind('score_changed'+hash, function(data) {
+			score=data.score;
+			turn=data.turn;
+			sync_score();
+			if(data.turn!=my_turn)
+				return false;
+			$("#game_state").html("Your move("+my_turn+")");
+		});
+
+		channel.bind('joined'+hash,function(){
+			$("#game_state").html("Your move("+my_turn+")");
+		})
+	});
+
+	$("#join_game").on("click",function(){
+		hash=prompt("Enter the game code here!");
+		$.post("push.php",{event:'joined',hash:hash});
+		$("#hash").html(hash);
+		$("#welcome_frame").hide();
+		$("#game_frame").show();
+		$("#game_state").html("Opponent's move("+turn+")");
+		my_turn="X";
+		channel.bind('score_changed'+hash, function(data) {
+			score=data.score;
+			turn=data.turn;
+			sync_score();
+			if(data.turn!=my_turn)
+				return false;
+			$("#game_state").html("Your move("+my_turn+")");
+		});
 	});
 });

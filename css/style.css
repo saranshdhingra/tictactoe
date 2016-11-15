@@ -1,3 +1,251 @@
+*,*:before,*:after{
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+}
+body{
+	color: rgba(0,0,0,.7);
+}
+img{
+	max-width:100%;
+	/* height: 100%; */
+}
+a{
+	text-decoration:none;
+	color:inherit;
+}
+.grid {
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: -webkit-box;
+	display: -moz-box;
+	display: flex
+}
+.grid.vertical {
+	-webkit-flex-direction: column;
+	-ms-flex-direction: column;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-moz-box-orient: vertical;
+	-moz-box-direction: normal;
+	flex-direction: column
+}
+.grid.align-center {
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	-ms-grid-row-align: center;
+	align-items: center
+}
+.grid.align-stretch{
+	-webkit-box-align: stretch;
+	-webkit-align-items: stretch;
+	-ms-flex-align: stretch;
+	-moz-box-align: stretch;
+	-ms-grid-row-align: stretch;
+	align-items: stretch
+}
+.grid.align-end{
+	align-items:flex-end;
+}
+.grid.justify-center {
+	-webkit-justify-content: center;
+	-ms-flex-pack: center;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	justify-content: center
+}
+.grid.justify-end {
+	-webkit-justify-content: flex-end;
+	-ms-flex-pack: end;
+	-webkit-box-pack: end;
+	-moz-box-pack: end;
+	justify-content: flex-end
+}
+.grid.justify-sb {
+	-webkit-justify-content: space-between;
+	-ms-flex-pack: justify;
+	-webkit-box-pack: justify;
+	-moz-box-pack: justify;
+	justify-content: space-between
+}
+.grid.justify-sa {
+	-webkit-justify-content: space-around;
+	-ms-flex-pack: distribute;
+	justify-content: space-around
+}
+.grid.wrap {
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap
+}
+.grid.inline {
+	display: -webkit-inline-box;
+	display: -webkit-inline-flex;
+	display: -ms-inline-flexbox;
+	display: -moz-inline-box;
+	display: inline-flex
+}
+/* .clear is the container, .clearfix is generally the child*/
+.left-cor{
+	left:0;
+	top:0;
+}
+.cover{
+	width:100%;
+	height:100%;
+}
+.i-block{
+	display:inline-block;
+}
+.v-top{
+	vertical-align:top;
+}
+.fullHeight{
+	min-height:100vh;
+}
+.block{
+	display:block;
+}
+.bold{
+	font-weight:bold;
+}
+#overlay{
+	position:fixed;
+	opacity:0;
+	pointer-events:none;
+	transition:opacity .4s;
+	background:rgba(0,0,0,0.6);
+}
+#overlay.visible{
+	opacity:1;
+	pointer-events:all;
+}
+#lightbox{
+	position:fixed;
+	z-index:1;
+	background:#fff;
+	border-radius:8px;
+	left:50%;
+	top:50%;
+	max-width:0;
+	max-height:0;
+	overflow:hidden;
+	transform:translate(-50%,-50%);
+	pointer-events:none;
+	transition:all .4s ease-out;
+}
+#lightbox.visible{
+	max-width:60%;
+	width: auto;
+	height: auto;
+	max-height:80%;
+	pointer-events:all;
+	padding: 25px;
+}
+#lightbox>.l_close{
+	position:absolute;
+	right: 2px;
+	top: 2px;
+	line-height: 0;
+	cursor:pointer;
+	font-size: 28px;
+}
+#lightbox_content{
+	overflow:auto;
+	max-height: 100%;
+	width: 100%;
+	/* margin: 20px; */
+}
+#lightbox_content .loader{
+	font-size: 64px;
+	color:#000;
+	height: 100%;
+	width: 100%;
+}
+/*Sizes*/
+.lg-3{
+	width:25%;
+}
+.lg-4{
+	width:33.33%;
+}
+.lg-5{
+	width:40%;
+}
+.lg-6{
+	width:50%;
+}
+.lg-8{
+	width:66.66%;
+}
+.lg-12{
+	width:100%;
+}
+/*Colors End*/
+/*Inputs*/
+.input-ctrl{
+	position:relative;
+}
+.input-ctrl input[type="text"],.input-ctrl input[type="email"],.input-ctrl textarea{
+	display:block;
+	width:100%;
+	background:none;
+	border:none;
+	border-bottom:1px solid #3d3d3d;
+	color:#000;
+	padding:2px 5px;
+	font-size:inherit;
+}
+.input-ctrl.with_btn{
+	text-align:center;
+}
+.input-ctrl button{
+	border:none;
+	background:none;
+	cursor:pointer;
+	font-size:26px;
+}
+textarea{
+	font-family:inherit;
+	resize:vertical;
+	min-height:75px;
+}
+input:focus,textarea:focus,button:focus{
+	outline:none;	/*I know! I know*/
+}
+/*Inputs end*/
+.self-center{
+	margin-left:auto;
+	margin-right:auto;
+}
+.frame{
+	position:absolute;
+	background:#efefef;
+}
+#welcome_frame button{
+	margin:10px 0;
+}
+button{
+	border:none;
+	background:none;
+	box-shadow:none;
+	cursor:pointer;
+	padding:10px 40px;
+	font-size:22px;
+}
+button.btn1{
+	background:#0f0;
+	color:#fff;
+}
+button.btn2{
+	background:#ccc;
+	color:#000;
+}
+#game_frame{
+	display:none;
+}
 #turn{
-	colro:#f00;
+	color:#f00;
 }
